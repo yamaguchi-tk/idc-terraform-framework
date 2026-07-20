@@ -1,6 +1,6 @@
 # terraform/user
 
-[日本語](README.ja.md)
+English | [日本語](README.ja.md)
 
 Directory for the list of users to register in the Identity Store.
 

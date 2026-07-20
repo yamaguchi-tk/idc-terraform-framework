@@ -26,6 +26,10 @@ configuration) is out of scope for this repository.
   (`aws_identitystore_user`). Do not enable automatic (SCIM) provisioning from your IdP
   into Identity Center — SCIM auto-provisioning and Terraform-managed users conflict and
   can cause `terraform apply` to fail. Manage users manually via this framework instead.
+- `terraform plan`/`apply` must be run with AWS credentials that have `sso:*` and
+  `identitystore:*` permissions against the AWS account where the Identity Center instance
+  resides (the management account, or the delegated administrator account if delegated
+  administration is enabled).
 
 ## Directory layout
 
@@ -53,6 +57,15 @@ through variables at every run. `identity_store_id` is derived automatically at 
 from `data "aws_ssoadmin_instances"`, so no manual input is needed. `aws_region` is a plain
 `locals` value (default: `ap-northeast-1`) in `terraform/root/variables.tf` — edit it
 directly in your fork if you use a different region.
+
+Before configuring a backend, you can validate your fork locally:
+
+```sh
+cd terraform/root
+terraform init -backend=false
+terraform validate
+terraform fmt -check -recursive
+```
 
 1. `backend "s3" {}` in `terraform/root/terraform.tf` is left empty, so specify it for your
    environment, e.g.
