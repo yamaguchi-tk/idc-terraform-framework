@@ -1,6 +1,6 @@
 # terraform/membership
 
-[日本語](README.ja.md)
+English | [日本語](README.ja.md)
 
 Directory for defining groups and their memberships.
 

@@ -25,6 +25,9 @@ list-driven な構成で管理するための Terraform フレームワークで
   直接作成します。IdP側からIdentity Centerへの自動プロビジョニング（SCIM）は有効にしないで
   ください。SCIM自動プロビジョニングとTerraform管理のユーザーは競合し、`terraform apply`が
   失敗する原因になります。ユーザー管理は本フレームワーク経由で行ってください。
+- `terraform plan`/`apply` は、Identity Center インスタンスが存在する AWS アカウント
+  （管理アカウント、または委任管理者を有効化している場合はその委任管理アカウント）に対して
+  `sso:*` / `identitystore:*` 権限を持つ AWS 認証情報で実行してください。
 
 ## Directory layout
 
@@ -52,6 +55,15 @@ terraform/
 自動導出されるため、手動での入力は不要です。`aws_region` は `terraform/root/variables.tf` の
 `locals` に静的な値（デフォルト: `ap-northeast-1`）として定義しているため、別リージョンを
 利用する場合は fork したコード上で直接書き換えてください。
+
+backend を設定する前に、fork した内容をローカルで検証できます。
+
+```sh
+cd terraform/root
+terraform init -backend=false
+terraform validate
+terraform fmt -check -recursive
+```
 
 1. `terraform/root/terraform.tf` の `backend "s3" {}` は空にしてあるため、
    `terraform init -backend-config="bucket=<your-bucket>" -backend-config="key=<your-key>" -backend-config="region=<your-region>"`

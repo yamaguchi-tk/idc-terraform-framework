@@ -19,8 +19,8 @@ and account permission assignments are declared in text files, and the engine in
 - `terraform/user/`: `user.txt` is the list of email addresses used to create users in the
   Identity Store
 - `terraform/root/`: the root module holding the Terraform definitions and variables
-  (where `terraform init/plan/apply` is run). Includes `assignments.tf`, `users.tf`,
-  `groups.tf`, `memberships.tf`, `variables.tf`, and `permissionsets.tf`
+  (where `terraform init/plan/apply` is run). Includes `terraform.tf`, `assignments.tf`,
+  `users.tf`, `groups.tf`, `memberships.tf`, `variables.tf`, and `permissionsets.tf`
 
 ## Notes when making changes
 

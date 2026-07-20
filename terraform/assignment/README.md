@@ -1,6 +1,6 @@
 # terraform/assignment
 
-[日本語](README.ja.md)
+English | [日本語](README.ja.md)
 
 Directory for defining permission assignments (PermissionSet Assignments) to AWS accounts.
 
