@@ -1,21 +1,18 @@
-variable "aws_region" {
-  description = "AWS Identity Center を管理する AWS リージョン"
-  type        = string
-  default     = "ap-northeast-1"
-}
-
-variable "identity_store_id" {
-  description = "AWS Identity Center の Identity Store ID (d-で始まるID)"
-  type        = string
-}
-
 data "aws_ssoadmin_instances" "instance" {}
 
 locals {
+  # AWS Identity Center を管理する AWS リージョン。fork して利用する場合はここを書き換える
+  # AWS region where AWS Identity Center is managed. Edit this value when you fork this repository.
+  aws_region = "ap-northeast-1"
+
   instance_arn = tolist(data.aws_ssoadmin_instances.instance.arns)[0]
+  # Identity Center Instance に対応する Identity Store ID を data source から自動取得
+  # Identity Store ID corresponding to the Identity Center instance, derived automatically from the data source
+  identity_store_id = tolist(data.aws_ssoadmin_instances.instance.identity_store_ids)[0]
 
   assignment_file_path = "../assignment"
   # assignment配下のフォルダ(AWSアカウントID)を列挙
+  # Enumerate the folders (AWS account IDs) under assignment/
   assignment_target_aws_accounts = distinct([
     for file in fileset(local.assignment_file_path, "*/*.txt") : dirname(file)
   ])
@@ -26,6 +23,8 @@ locals {
 locals {
   # assignment_targets の定義
   # 利用するPermissionSetを増やす場合は、file_name / permission_set_arn / principal_type（"GROUP" または "USER"）のマッピングを追加する
+  # Definition of assignment_targets.
+  # To add a PermissionSet to use, add a mapping of file_name / permission_set_arn / principal_type ("GROUP" or "USER").
   assignment_target_groups = [
     {
       file_name          = "AdministratorAccess_GROUP.txt"

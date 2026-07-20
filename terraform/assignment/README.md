@@ -1,14 +1,18 @@
 # terraform/assignment
 
-AWSアカウントへの権限割当（PermissionSet Assignment）を定義するディレクトリです。
+[日本語](README.ja.md)
+
+Directory for defining permission assignments (PermissionSet Assignments) to AWS accounts.
 
 - `<account_id>/<permission_set>_<USER|GROUP>.txt`
-  - `<account_id>`: 割当先の AWS アカウントID（12桁）をディレクトリ名にします
-  - `<permission_set>`: `variables.tf` の `assignment_target_groups` / `assignment_target_users` に登録した PermissionSet 名
-  - `<USER|GROUP>`: ファイル名の末尾で、ユーザーへの割当かグループへの割当かを示します
-  - ファイルの中身は、割当対象のユーザー名（ローカルパート）またはグループ名を1行1件で記載します
+  - `<account_id>`: the target AWS account ID (12 digits) as the directory name
+  - `<permission_set>`: the PermissionSet name registered in `assignment_target_groups` /
+    `assignment_target_users` in `variables.tf`
+  - `<USER|GROUP>`: the file name suffix indicating whether the assignment is for a user
+    or a group
+  - Each line lists the user name (local part) or group name to assign
 
-例: `111111111111/AdministratorAccess_GROUP.txt`
+Example: `111111111111/AdministratorAccess_GROUP.txt`
 
 ```
 engineering

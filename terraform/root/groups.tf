@@ -3,6 +3,7 @@
 ########################################
 locals {
   # membershipディレクトリのtxtファイル名からグループ名を自動抽出
+  # Automatically derive group names from the .txt file names under the membership directory
   groups = [
     for file in fileset(local.membership_file_path, "*.txt") :
     trimsuffix(file, ".txt")
@@ -26,5 +27,5 @@ resource "aws_identitystore_group" "this" {
   for_each = local.group_map
 
   display_name      = each.value.group_name
-  identity_store_id = var.identity_store_id
+  identity_store_id = local.identity_store_id
 }

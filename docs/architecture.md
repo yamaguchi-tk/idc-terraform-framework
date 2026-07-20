@@ -1,35 +1,46 @@
-# アーキテクチャ
+# Architecture
 
-## 概要
+English | [日本語](architecture.ja.md)
 
-このリポジトリは AWS Identity Center (旧 AWS SSO) のアクセス権限を Terraform で管理します。
-構成は list-driven（テキストファイル駆動）で、ユーザー・グループメンバーシップ・アカウントへの
-権限割当をテキストファイルで宣言し、`terraform/root/` のエンジンがそれを Terraform リソースとして
-展開します。
+## Overview
 
-## ディレクトリ構成
+This repository manages AWS Identity Center (formerly AWS SSO) access permissions with
+Terraform. The configuration is list-driven (text-file driven): users, group memberships,
+and account permission assignments are declared in text files, and the engine in
+`terraform/root/` expands them into Terraform resources.
 
-- `terraform/assignment/`: AWSアカウントIDごとのディレクトリに権限割当リストを配置する。
-  ファイルは `<permission_set>_<USER|GROUP>.txt` の形式で、ユーザー名（メールアドレスの`@`より
-  前の部分）またはグループ名を列挙する
-- `terraform/membership/`: グループメンバーシップのリスト。ファイル名がそのままグループ名になり、
-  ファイルの中身はユーザー名（メールアドレスの`@`より前の部分）
-- `terraform/user/`: `user.txt` は Identity Store にユーザーを作成するためのメールアドレス一覧
-- `terraform/root/`: Terraformの定義と変数を置くルートモジュール（`terraform init/plan/apply`を
-  実行する場所）。`assignments.tf`, `users.tf`, `groups.tf`, `memberships.tf`, `variables.tf`,
-  `permissionsets.tf` を含む
+## Directory layout
 
-## 変更時の注意
+- `terraform/assignment/`: places permission assignment lists in a directory per AWS
+  account ID. Files follow the `<permission_set>_<USER|GROUP>.txt` format and list user
+  names (the local part before `@` of an email address) or group names
+- `terraform/membership/`: group membership lists. The file name itself becomes the group
+  name, and the file content is user names (the local part before `@`)
+- `terraform/user/`: `user.txt` is the list of email addresses used to create users in the
+  Identity Store
+- `terraform/root/`: the root module holding the Terraform definitions and variables
+  (where `terraform init/plan/apply` is run). Includes `assignments.tf`, `users.tf`,
+  `groups.tf`, `memberships.tf`, `variables.tf`, and `permissionsets.tf`
 
-- メンバーシップや権限割当を追加する前に、必ず `terraform/user/user.txt` にユーザーを追加すること
-- メンバーシップ・権限割当のリストは、メールアドレス全体ではなくユーザー名（`@`より前の部分）を使う
-- 権限割当ファイルは `terraform/root/variables.tf` の `assignment_target_groups` /
-  `assignment_target_users` に登録されている。新しい PermissionSet のファイルを追加する場合は、
-  `permissionsets.tf` にリソースを追加した上で `variables.tf` にも `file_name` /
-  `permission_set_arn` / `principal_type` のマッピングを追加すること
-- メンバーシップファイルのリネームは、グループの削除・再作成と等価な操作になる。
-  新しいファイルを作成してから古いファイルを削除する順序で行うこと
-- 新しいAWSアカウントの追加は `terraform/assignment/` 配下に新しいディレクトリを作るだけでよい。
-  `variables.tf` の `assignment_target_aws_accounts` が `fileset` で自動検出する
-- 本リポジトリは意図的に CI/CD 設定（GitHub Actions 等）を含まない。`terraform plan`/`apply` は
-  利用者自身のパイプラインに組み込み、変更対象を該当テキストファイルに限定すること
+## Notes when making changes
+
+- Before adding a membership or an assignment, always add the user to
+  `terraform/user/user.txt` first
+- Membership and assignment lists use user names (the part before `@`), not full email
+  addresses
+- Assignment files are registered in `assignment_target_groups` /
+  `assignment_target_users` in `terraform/root/variables.tf`. When adding a file for a new
+  PermissionSet, add the resource in `permissionsets.tf` and also add the corresponding
+  `file_name` / `permission_set_arn` / `principal_type` mapping in `variables.tf`
+- Renaming a membership file is equivalent to deleting and re-creating the group. Create
+  the new file before deleting the old one
+- Adding a new AWS account only requires creating a new directory under
+  `terraform/assignment/`. `assignment_target_aws_accounts` in `variables.tf`
+  auto-discovers it via `fileset`
+- `identity_store_id` is derived automatically as a `locals` value in `variables.tf` from
+  `data "aws_ssoadmin_instances"`, so no manual input is required. `aws_region` (default:
+  `ap-northeast-1`) is also defined as a static `locals` value in the same file — edit your
+  fork directly if you need to change it
+- This repository intentionally does not include CI/CD configuration (e.g. GitHub
+  Actions). Incorporate `terraform plan`/`apply` into your own pipeline, and scope changes
+  to the relevant text files
