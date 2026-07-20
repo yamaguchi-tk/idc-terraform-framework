@@ -20,6 +20,13 @@ already set up separately, and that users authenticate via SSO federated from th
 Setting up the IdP itself or its federation with Identity Center (e.g. SAML/SCIM
 configuration) is out of scope for this repository.
 
+- AWS IAM Identity Center itself must already be enabled for your organization. This
+  repository does not enable it.
+- This framework provisions Identity Store users directly via Terraform
+  (`aws_identitystore_user`). Do not enable automatic (SCIM) provisioning from your IdP
+  into Identity Center — SCIM auto-provisioning and Terraform-managed users conflict and
+  can cause `terraform apply` to fail. Manage users manually via this framework instead.
+
 ## Directory layout
 
 See [docs/architecture.md](docs/architecture.md) for details.

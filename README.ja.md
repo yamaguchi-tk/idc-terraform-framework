@@ -19,6 +19,13 @@ list-driven な構成で管理するための Terraform フレームワークで
 ユーザー認証を行うことを前提としています。IdP自体の構築や Identity Center との連携設定
 （SAML/SCIM 設定等）は本リポジトリのスコープ外です。
 
+- AWS IAM Identity Center 自体が組織で有効化済みであることも前提です。本リポジトリは
+  有効化そのものは行いません。
+- 本フレームワークは Terraform (`aws_identitystore_user`) で Identity Store のユーザーを
+  直接作成します。IdP側からIdentity Centerへの自動プロビジョニング（SCIM）は有効にしないで
+  ください。SCIM自動プロビジョニングとTerraform管理のユーザーは競合し、`terraform apply`が
+  失敗する原因になります。ユーザー管理は本フレームワーク経由で行ってください。
+
 ## Directory layout
 
 詳細は [docs/architecture.md](docs/architecture.md) を参照してください。
