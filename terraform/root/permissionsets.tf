@@ -2,6 +2,11 @@
 # aws_ssoadmin_permission_set / aws_ssoadmin_managed_policy_attachment を追加し、
 # variables.tf の assignment_target_groups / assignment_target_users にも
 # 対応する file_name / permission_set_arn / principal_type（"GROUP" または "USER"）のマッピングを追加すること。
+#
+# To add a PermissionSet to use, follow the pattern below to add
+# aws_ssoadmin_permission_set / aws_ssoadmin_managed_policy_attachment resources,
+# and also add the corresponding file_name / permission_set_arn / principal_type ("GROUP" or "USER")
+# mapping to assignment_target_groups / assignment_target_users in variables.tf.
 
 ### AdministratorAccess
 resource "aws_ssoadmin_permission_set" "AdministratorAccess" {

@@ -1,10 +1,14 @@
 # terraform/membership
 
-グループとそのメンバーシップを定義するディレクトリです。
+[日本語](README.ja.md)
 
-- `<groupname>.txt`: ファイル名がグループ名になります。ファイルの中身は、そのグループに所属するユーザー名（`terraform/user/user.txt` のメールアドレスの `@` より前のローカルパート）を1行1件で記載します
+Directory for defining groups and their memberships.
 
-例: `engineering.txt`
+- `<groupname>.txt`: the file name becomes the group name. Each line lists a user name
+  belonging to that group (the local part before `@` of an email address in
+  `terraform/user/user.txt`)
+
+Example: `engineering.txt`
 
 ```
 alice

@@ -1,10 +1,12 @@
 # terraform/user
 
-Identity Store に登録するユーザーの一覧ファイルを配置するディレクトリです。
+[日本語](README.ja.md)
 
-- `user.txt`: メールアドレス（UPN）を1行1件で記載します
+Directory for the list of users to register in the Identity Store.
 
-例:
+- `user.txt`: one email address (UPN) per line
+
+Example:
 
 ```
 alice@example.com

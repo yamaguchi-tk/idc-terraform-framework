@@ -12,6 +12,14 @@ Terraform's `for_each`.
 For a working sample with fictional data, see
 [idc-terraform-example](https://github.com/yamaguchi-tk/idc-terraform-example).
 
+## Prerequisites
+
+This repository manages only the Identity Store (users and groups) and permission
+assignments of AWS Identity Center. It assumes an external Identity Provider (IdP) is
+already set up separately, and that users authenticate via SSO federated from that IdP.
+Setting up the IdP itself or its federation with Identity Center (e.g. SAML/SCIM
+configuration) is out of scope for this repository.
+
 ## Directory layout
 
 See [docs/architecture.md](docs/architecture.md) for details.
@@ -33,15 +41,19 @@ terraform/
 
 ## Usage
 
-1. Set `identity_store_id` (the Identity Store ID, starting with `d-`) in
-   `terraform/root/variables.tf` via `-var` or `terraform.tfvars`
-2. `backend "s3" {}` in `terraform/root/terraform.tf` is left empty, so specify it for your
+This framework is designed to be forked and edited directly, rather than configured
+through variables at every run. `identity_store_id` is derived automatically at plan time
+from `data "aws_ssoadmin_instances"`, so no manual input is needed. `aws_region` is a plain
+`locals` value (default: `ap-northeast-1`) in `terraform/root/variables.tf` — edit it
+directly in your fork if you use a different region.
+
+1. `backend "s3" {}` in `terraform/root/terraform.tf` is left empty, so specify it for your
    environment, e.g.
    `terraform init -backend-config="bucket=<your-bucket>" -backend-config="key=<your-key>" -backend-config="region=<your-region>"`
-3. Add user email addresses to `terraform/user/user.txt`
-4. Add a group and its members to `terraform/membership/<groupname>.txt`
-5. Add a permission assignment to `terraform/assignment/<account_id>/<permission_set>_<USER|GROUP>.txt`
-6. `permissionsets.tf` only includes example definitions for AWS managed policies
+2. Add user email addresses to `terraform/user/user.txt`
+3. Add a group and its members to `terraform/membership/<groupname>.txt`
+4. Add a permission assignment to `terraform/assignment/<account_id>/<permission_set>_<USER|GROUP>.txt`
+5. `permissionsets.tf` only includes example definitions for AWS managed policies
    (AdministratorAccess / PowerUserAccess / ReadOnlyAccess). If you need another
    PermissionSet, add it following the same pattern, and also add the corresponding
    `file_name` / `permission_set_arn` / `principal_type` (`"GROUP"` or `"USER"`) mapping to

@@ -12,6 +12,13 @@ list-driven な構成で管理するための Terraform フレームワークで
 サンプル（架空データによる動作例）は [idc-terraform-example](https://github.com/yamaguchi-tk/idc-terraform-example)
 を参照してください。
 
+## 前提条件
+
+本リポジトリが管理するのは AWS Identity Center の Identity Store（ユーザー・グループ）と
+権限割当のみです。外部の Identity Provider (IdP) が別途構築済みであり、その IdP からの SSO で
+ユーザー認証を行うことを前提としています。IdP自体の構築や Identity Center との連携設定
+（SAML/SCIM 設定等）は本リポジトリのスコープ外です。
+
 ## Directory layout
 
 詳細は [docs/architecture.md](docs/architecture.md) を参照してください。
@@ -33,15 +40,19 @@ terraform/
 
 ## Usage
 
-1. `terraform/root/variables.tf` の `identity_store_id`（Identity Store ID, `d-`で始まるID）を
-   `-var` または `terraform.tfvars` で指定する
-2. `terraform/root/terraform.tf` の `backend "s3" {}` は空にしてあるため、
+本フレームワークは、実行のたびに変数で指定する方式ではなく、forkしてコードを直接編集する
+運用を想定しています。`identity_store_id` は `data "aws_ssoadmin_instances"` から plan 時に
+自動導出されるため、手動での入力は不要です。`aws_region` は `terraform/root/variables.tf` の
+`locals` に静的な値（デフォルト: `ap-northeast-1`）として定義しているため、別リージョンを
+利用する場合は fork したコード上で直接書き換えてください。
+
+1. `terraform/root/terraform.tf` の `backend "s3" {}` は空にしてあるため、
    `terraform init -backend-config="bucket=<your-bucket>" -backend-config="key=<your-key>" -backend-config="region=<your-region>"`
    のように利用者の環境に合わせて指定する
-3. `terraform/user/user.txt` にユーザーのメールアドレスを追加する
-4. `terraform/membership/<groupname>.txt` にグループとそのメンバーを追加する
-5. `terraform/assignment/<account_id>/<permission_set>_<USER|GROUP>.txt` に権限割当を追加する
-6. `permissionsets.tf` にはAWS管理ポリシーの定義例（AdministratorAccess / PowerUserAccess /
+2. `terraform/user/user.txt` にユーザーのメールアドレスを追加する
+3. `terraform/membership/<groupname>.txt` にグループとそのメンバーを追加する
+4. `terraform/assignment/<account_id>/<permission_set>_<USER|GROUP>.txt` に権限割当を追加する
+5. `permissionsets.tf` にはAWS管理ポリシーの定義例（AdministratorAccess / PowerUserAccess /
    ReadOnlyAccess）のみを含めています。他のPermissionSetが必要な場合は同様のパターンで追加し、
    `variables.tf` の `assignment_target_groups` / `assignment_target_users` にも対応する
    `file_name` / `permission_set_arn` / `principal_type`（`"GROUP"` または `"USER"`）のマッピングを追加してください
