@@ -1,5 +1,8 @@
 # idc-terraform-framework
 
+[![License](https://img.shields.io/github/license/yamaguchi-tk/idc-terraform-framework)](LICENSE)
+[![Terraform](https://img.shields.io/badge/terraform-%3E%3D1.8.4-623CE4)](terraform/root/terraform.tf)
+
 English | [日本語](README.ja.md)
 
 A Terraform framework for managing AWS Identity Center (formerly AWS SSO) users, groups,
@@ -11,6 +14,39 @@ Terraform's `for_each`.
 
 For a working sample with fictional data, see
 [idc-terraform-example](https://github.com/yamaguchi-tk/idc-terraform-example).
+
+## Quick Start
+
+Try it locally, no AWS account or credentials required:
+
+```sh
+git clone https://github.com/yamaguchi-tk/idc-terraform-framework.git
+cd idc-terraform-framework/terraform/root
+terraform init -backend=false
+terraform validate
+```
+
+To manage a real AWS Identity Center, fork this repository and follow
+[Prerequisites](#prerequisites) and [Usage](#usage) below.
+
+## Why this exists
+
+AWS Identity Center has a few common ways to manage users, groups, and permission
+assignments, each with a different tradeoff:
+
+| Approach | Change history | PR-reviewable diff | HCL knowledge needed for routine changes | Setup effort |
+| --- | --- | --- | --- | --- |
+| AWS Console (manual) | No | No | No | None |
+| Hand-written Terraform `resource` blocks | Yes | Noisy (a full resource block per change) | Yes | Low |
+| SCIM auto-provisioning from an IdP | Partial (IdP-side only) | Depends on the IdP | No | Medium |
+| This framework (list-driven) | Yes | Minimal (one line per change) | No | Low |
+
+This framework's approach: declare only the "list" — an email address, a group and its
+members, or a permission assignment — as a line in a plain text file. Terraform expands
+these into `aws_identitystore_user`/`aws_identitystore_group`/`aws_ssoadmin_account_assignment`
+resources automatically via `for_each`. The result is that a routine change (adding one
+user, adding one group member) is a one-line diff in a `.txt` file, reviewable in a PR by
+someone who has never touched Terraform.
 
 ## Prerequisites
 
@@ -91,6 +127,10 @@ terraform apply
 This repository does not include CI/CD configuration (e.g. GitHub Actions). For production
 use, we recommend setting up a separate pipeline to run `terraform plan`/`apply` automatically
 on a PR basis.
+
+## Contributing
+
+Bug reports, questions, and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

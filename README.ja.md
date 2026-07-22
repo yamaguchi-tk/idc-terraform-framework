@@ -1,5 +1,8 @@
 # idc-terraform-framework
 
+[![License](https://img.shields.io/github/license/yamaguchi-tk/idc-terraform-framework)](LICENSE)
+[![Terraform](https://img.shields.io/badge/terraform-%3E%3D1.8.4-623CE4)](terraform/root/terraform.tf)
+
 [English](README.md) | 日本語
 
 AWS Identity Center (旧 AWS SSO) のユーザー・グループ・権限割当を、テキストファイルで宣言する
@@ -11,6 +14,38 @@ list-driven な構成で管理するための Terraform フレームワークで
 
 サンプル（架空データによる動作例）は [idc-terraform-example](https://github.com/yamaguchi-tk/idc-terraform-example)
 を参照してください。
+
+## Quick Start
+
+AWSアカウントや認証情報なしで、ローカルで試すことができます。
+
+```sh
+git clone https://github.com/yamaguchi-tk/idc-terraform-framework.git
+cd idc-terraform-framework/terraform/root
+terraform init -backend=false
+terraform validate
+```
+
+実際の AWS Identity Center を管理する場合は、本リポジトリを fork した上で
+[前提条件](#前提条件) と [Usage](#usage) を参照してください。
+
+## なぜこの構成なのか
+
+AWS Identity Center のユーザー・グループ・権限割当の管理には、いくつかの一般的な方法があり、
+それぞれトレードオフがあります。
+
+| 方法 | 変更履歴 | PRでレビュー可能な差分 | 日常的な変更にHCLの知識が必要か | 導入コスト |
+| --- | --- | --- | --- | --- |
+| AWSコンソール（手動） | なし | 不可 | 不要 | なし |
+| Terraformの `resource` ブロックを手書き | あり | ノイジー（変更のたびにresourceブロック全体） | 必要 | 低い |
+| IdPからのSCIM自動プロビジョニング | 一部（IdP側のみ） | IdPに依存 | 不要 | 中程度 |
+| 本フレームワーク（list-driven） | あり | 最小限（変更ごとに1行） | 不要 | 低い |
+
+本フレームワークのアプローチは、メールアドレス・グループとそのメンバー・権限割当という「リスト」
+だけをプレーンテキストファイルの1行として宣言することです。Terraformがこれを `for_each` で
+`aws_identitystore_user` / `aws_identitystore_group` / `aws_ssoadmin_account_assignment` などの
+リソースに自動展開します。結果として、日常的な変更（ユーザー1人の追加、グループメンバー1人の
+追加）は `.txt` ファイルの1行差分となり、Terraformを触ったことがない人でもPRでレビューできます。
 
 ## 前提条件
 
@@ -87,6 +122,10 @@ terraform apply
 
 本リポジトリは CI/CD 設定（GitHub Actions 等）を含みません。実運用では
 `terraform plan`/`apply` をPRベースで自動実行するパイプラインを別途用意することを推奨します。
+
+## Contributing
+
+バグ報告・質問・プルリクエストを歓迎します。[CONTRIBUTING.md](CONTRIBUTING.md)（英語）を参照してください。
 
 ## License
 
