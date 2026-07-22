@@ -9,6 +9,29 @@ Terraform. The configuration is list-driven (text-file driven): users, group mem
 and account permission assignments are declared in text files, and the engine in
 `terraform/root/` expands them into Terraform resources.
 
+## Diagram
+
+```mermaid
+flowchart LR
+    subgraph Text files
+        U["terraform/user/user.txt"]
+        M["terraform/membership/*.txt"]
+        A["terraform/assignment/**/*.txt"]
+    end
+    subgraph Engine["terraform/root (for_each / fileset)"]
+        E["users.tf / groups.tf /<br/>memberships.tf / assignments.tf"]
+    end
+    subgraph AWS Identity Center
+        IU["Identity Store: Users"]
+        IG["Identity Store: Groups"]
+        IA["Permission set assignments"]
+    end
+
+    U --> E --> IU
+    M --> E --> IG
+    A --> E --> IA
+```
+
 ## Directory layout
 
 - `terraform/assignment/`: places permission assignment lists in a directory per AWS

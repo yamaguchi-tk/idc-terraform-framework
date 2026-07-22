@@ -9,6 +9,29 @@
 権限割当をテキストファイルで宣言し、`terraform/root/` のエンジンがそれを Terraform リソースとして
 展開します。
 
+## 図
+
+```mermaid
+flowchart LR
+    subgraph TextFiles["テキストファイル"]
+        U["terraform/user/user.txt"]
+        M["terraform/membership/*.txt"]
+        A["terraform/assignment/**/*.txt"]
+    end
+    subgraph Engine["terraform/root (for_each / fileset)"]
+        E["users.tf / groups.tf /<br/>memberships.tf / assignments.tf"]
+    end
+    subgraph AWS Identity Center
+        IU["Identity Store: ユーザー"]
+        IG["Identity Store: グループ"]
+        IA["権限割当"]
+    end
+
+    U --> E --> IU
+    M --> E --> IG
+    A --> E --> IA
+```
+
 ## ディレクトリ構成
 
 - `terraform/assignment/`: AWSアカウントIDごとのディレクトリに権限割当リストを配置する。
