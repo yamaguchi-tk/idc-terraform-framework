@@ -19,7 +19,7 @@ flowchart LR
         A["terraform/assignment/**/*.txt"]
     end
     subgraph Engine["terraform/root (for_each / fileset)"]
-        E["users.tf / groups.tf /\nmemberships.tf / assignments.tf"]
+        E["users.tf / groups.tf /<br/>memberships.tf / assignments.tf"]
     end
     subgraph AWS Identity Center
         IU["Identity Store: Users"]
