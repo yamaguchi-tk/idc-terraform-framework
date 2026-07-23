@@ -15,6 +15,16 @@ list-driven な構成で管理するための Terraform フレームワークで
 サンプル（架空データによる動作例）は [idc-terraform-example](https://github.com/yamaguchi-tk/idc-terraform-example)
 を参照してください。
 
+## ユースケース
+
+典型的な想定シーンは、外部IdP（Google Workspace、Okta、Entra ID等）からSSOをAWS Identity
+Centerに連携済みで、ユーザーはSSO経由でAWSコンソール/CLIに**認証（authentication）**する、
+という構成です。本フレームワークはIdentity Center側の**認可（authorization）**、つまり
+「どんなグループが存在し、誰が所属し、どのAWSアカウントでどの権限セットが割り当てられるか」
+を管理します。これらの決定はプレーンテキストで宣言するため、変更（例:「Aliceを
+`platform-team` グループに追加」）は1行の差分となり、Terraformを知らないレビュアーでもPRで
+承認でき、git上に変更履歴が残ります。
+
 ## Quick Start
 
 AWSアカウントや認証情報なしで、ローカルで試すことができます。
