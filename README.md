@@ -15,6 +15,16 @@ Terraform's `for_each`.
 For a working sample with fictional data, see
 [idc-terraform-example](https://github.com/yamaguchi-tk/idc-terraform-example).
 
+## Use case
+
+A typical fit: your organization already federates SSO through an external IdP (Google
+Workspace, Okta, Entra ID, etc.) into AWS Identity Center for **authentication** — users log
+in to the AWS console/CLI via SSO. This framework manages the **authorization** side on the
+Identity Center side: which groups exist, who belongs to them, and which permission set they
+get assigned to in which AWS account. Those decisions are declared as plain text, so a
+change (e.g. "add Alice to the `platform-team` group") is a one-line diff that a
+non-Terraform reviewer can approve in a PR, with a full history in git.
+
 ## Quick Start
 
 Try it locally, no AWS account or credentials required:
